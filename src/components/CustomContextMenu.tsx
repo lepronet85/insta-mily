@@ -1,11 +1,10 @@
-import { Button } from "./ui/button";
-
 export const CustomContextMenu = ({
   menuPosition,
-
+  onLayout,
   onAddProfile,
 }: {
   menuPosition: { x: number; y: number };
+  onLayout: (direction: string) => void;
   onAddProfile: () => void;
 }) => {
   return (
@@ -19,6 +18,12 @@ export const CustomContextMenu = ({
           onClick={onAddProfile}
         >
           Add profile
+        </li>
+        <li
+          className="py-[8px] px-[12px] cursor-pointer hover:bg-gray-700 text-white"
+          onClick={() => onLayout("TB")}
+        >
+          Layout
         </li>
       </ul>
     </div>
