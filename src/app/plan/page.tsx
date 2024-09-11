@@ -16,6 +16,7 @@ import {
 import "@xyflow/react/dist/style.css";
 import { useCallback, useState } from "react";
 import dagre from "dagre";
+import CustomEdge from "@/components/CustomEdge";
 
 const initialNodes: Node[] = [
   {
@@ -30,6 +31,10 @@ const initialEdges: Edge[] = [];
 
 const nodeTypes = {
   user: User,
+};
+
+const edgeTypes = {
+  customEdge: CustomEdge,
 };
 
 const dagreGraph = new dagre.graphlib.Graph();
@@ -83,16 +88,30 @@ const Plan = () => {
 
   const [menuVisible, setMenuVisible] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
+  const [selectedElementType, setSelectedElementType] = useState<string | null>(
+    null
+  );
+  const [selectedElementId, setSelectedElementId] = useState<string | null>(
+    null
+  );
 
-  const handleContextMenu = (event: MouseEvent) => {
+  const handleContextMenu = (
+    event: MouseEvent,
+    elementType: string,
+    elementId?: string
+  ) => {
     event.preventDefault();
 
     setMenuPosition({ x: event.pageX, y: event.pageY });
+    setSelectedElementType(elementType);
+    setSelectedElementId(elementId || null);
     setMenuVisible(true);
   };
 
-  const handleClick = (event: MouseEvent) => {
+  const handleClick = () => {
     setMenuVisible(false);
+    setSelectedElementType(null);
+    setSelectedElementId(null);
   };
 
   const onConnect = useCallback(
@@ -101,7 +120,7 @@ const Plan = () => {
         ...connection,
         animated: true,
         id: `${edges.length + 1}`,
-        // type: "customEdge",
+        type: "customEdge",
       };
       setEdges((prevEdges) => addEdge(edge, prevEdges));
     },
@@ -136,31 +155,52 @@ const Plan = () => {
     [nodes, edges]
   );
 
+  const renderContextMenu = (menuPosition: { x: number; y: number }) => {
+    switch (selectedElementType) {
+      case "node":
+        return (
+          <CustomContextMenu
+            menuPosition={menuPosition}
+            onAddProfile={handleAddProfile}
+            onLayout={onLayout}
+          />
+        );
+      case "background":
+        return (
+          <CustomContextMenu
+            menuPosition={menuPosition}
+            onAddProfile={handleAddProfile}
+            onLayout={onLayout}
+          />
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <div
       className="w-screen h-screen"
-      onContextMenu={handleContextMenu}
+      onContextMenu={(e) => handleContextMenu(e, "background")}
       onClick={handleClick}
     >
       <ReactFlow
         nodes={nodes}
         edges={edges}
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        onNodeContextMenu={(event, node) =>
+          handleContextMenu(event, "node", node.id)
+        }
         fitView
       >
         <Background />
         <Controls />
       </ReactFlow>
-      {menuVisible && (
-        <CustomContextMenu
-          menuPosition={menuPosition}
-          onAddProfile={handleAddProfile}
-          onLayout={onLayout}
-        />
-      )}
+      {menuVisible && renderContextMenu(menuPosition)}
     </div>
   );
 };

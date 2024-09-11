@@ -1,5 +1,5 @@
 import { Position } from "@xyflow/react";
-import React from "react";
+import React, { useState } from "react";
 import CustomHandle from "./CustomHandle";
 import { NodeProps } from "react-flow-renderer";
 
