@@ -14,7 +14,7 @@ import {
   useNodesState,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import dagre from "dagre";
 import CustomEdge from "@/components/CustomEdge";
 import { NodeCustomContextMenu } from "@/components/NodeCustomContextMenu";
@@ -23,12 +23,23 @@ const initialNodes: Node[] = [
   {
     id: "1",
     position: { x: 100, y: 100 },
-    data: { profile: "https://avatars.githubusercontent.com/u/1" },
+    data: {
+      profilePic: "https://avatars.githubusercontent.com/u/1",
+      profileId: 1,
+    },
     type: "user",
   },
 ];
 
-const initialEdges: Edge[] = [];
+const initialEdges: Edge[] = [
+  {
+    id: "e1-2",
+    source: "1",
+    target: "2",
+    animated: true,
+    type: "customEdge",
+  },
+];
 
 const nodeTypes = {
   user: User,
@@ -44,7 +55,15 @@ dagreGraph.setDefaultEdgeLabel(() => ({}));
 const nodeWidth = 172;
 const nodeHeight = 82;
 
-const getLayoutedElements = (nodes, edges, direction = "TB") => {
+import { Position } from "@xyflow/react";
+import ProfileDetails from "@/components/ProfileDetails";
+import EditProfileDetails from "@/components/EditProfileDetails";
+
+const getLayoutedElements = (
+  nodes: Node[],
+  edges: Edge[],
+  direction = "TB"
+) => {
   const isHorizontal = direction === "LR";
   dagreGraph.setGraph({ rankdir: direction });
 
@@ -62,8 +81,8 @@ const getLayoutedElements = (nodes, edges, direction = "TB") => {
     const nodeWithPosition = dagreGraph.node(node.id);
     const newNode = {
       ...node,
-      targetPosition: isHorizontal ? "left" : "top",
-      sourcePosition: isHorizontal ? "right" : "bottom",
+      targetPosition: isHorizontal ? Position.Left : Position.Top,
+      sourcePosition: isHorizontal ? Position.Right : Position.Bottom,
       // We are shifting the dagre node position (anchor=center center) to the top left
       // so it matches the React Flow node anchor point (top left).
       position: {
@@ -95,9 +114,13 @@ const Plan = () => {
   const [selectedElementId, setSelectedElementId] = useState<string | null>(
     null
   );
+  const [selectedProfile, setSelectedProfile] = useState<Node | null>(null);
+  const [showProfileDetails, setShowProfileDetails] = useState<boolean>(false);
+  const [showEditProfileDetails, setShowEditProfileDetails] =
+    useState<boolean>(false);
 
   const handleContextMenu = (
-    event: MouseEvent,
+    event: React.MouseEvent,
     elementType: string,
     elementId?: string
   ) => {
@@ -123,10 +146,12 @@ const Plan = () => {
       const edge = {
         ...connection,
         animated: true,
-        id: `${edges.length + 1}`,
+        id: `${Date.now()}`,
         type: "customEdge",
       };
-      setEdges((prevEdges) => addEdge(edge, prevEdges));
+      setEdges((prevEdges) =>
+        addEdge({ ...edge, animated: edge.animated ?? true }, prevEdges)
+      );
     },
     [edges]
   );
@@ -136,20 +161,28 @@ const Plan = () => {
     setNodes((prevNodes) => [
       ...prevNodes,
       {
-        id: `${prevNodes.length + 1}`,
+        id: `${Date.now()}`,
         data: {
-          profile: `https://avatars.githubusercontent.com/u/${
+          profilePic: `https://avatars.githubusercontent.com/u/${
             prevNodes.length + 1
           }`,
+          profileId: prevNodes.length + 1,
         },
         type: "user",
         position: { x: location, y: location },
+        targetPosition: Position.Top,
+        sourcePosition: Position.Bottom,
       },
     ]);
   };
 
-  const handleRemoveProfile = (id: string) => {
-    setNodes((prevNodes) => prevNodes.filter((node) => node.id !== id));
+  const handleRemoveProfile = (nodeId: string) => {
+    setNodes((prevNodes) => prevNodes.filter((node) => node.id !== nodeId));
+    setEdges((prevEdges) =>
+      prevEdges.filter(
+        (edge) => edge.source !== nodeId && edge.target !== nodeId
+      )
+    );
   };
 
   const onLayout = useCallback(
@@ -162,6 +195,30 @@ const Plan = () => {
     },
     [nodes, edges]
   );
+
+  const handleShowProfileDetails = (elementId: string) => {
+    setShowProfileDetails(true);
+    const selectedElement = nodes.find((node) => node.id === elementId);
+    console.log(selectedElement);
+    setSelectedProfile(selectedElement || null);
+  };
+
+  const handleHideProfileDetails = () => {
+    setShowProfileDetails(false);
+    setSelectedProfile(null);
+  };
+
+  const handleShowEditProfileDetails = () => {
+    setShowEditProfileDetails(true);
+  };
+
+  const handleHideEditProfileDetails = () => {
+    setShowEditProfileDetails(false);
+  };
+
+  // useEffect(() => {
+  //   console.log(nodes);
+  // }, [nodes]);
 
   const renderContextMenu = (menuPosition: { x: number; y: number }) => {
     switch (selectedElementType) {
@@ -178,7 +235,8 @@ const Plan = () => {
           <NodeCustomContextMenu
             menuPosition={menuPosition}
             onRemoveProfile={handleRemoveProfile}
-            nodeId={selectedElementId}
+            onShowEditProfile={handleShowEditProfileDetails}
+            nodeId={selectedElementId || ""}
           />
         );
       default:
@@ -188,7 +246,7 @@ const Plan = () => {
 
   return (
     <div
-      className="w-screen h-screen"
+      className="w-screen h-screen overflow-hidden relative"
       onContextMenu={(e) => handleContextMenu(e, "background")}
       onClick={handleClick}
     >
@@ -203,12 +261,33 @@ const Plan = () => {
         onNodeContextMenu={(event, node) =>
           handleContextMenu(event, "node", node.id)
         }
+        onNodeClick={(event, node) => handleShowProfileDetails(node.id)}
         fitView
       >
-        <Background />
+        <Background
+          gap={16}
+          size={1}
+          color="#d9e2ec"
+          style={{
+            background: "linear-gradient(to right, #f0f4f8, #d9e2ec, #f0f4f8)",
+          }}
+        />
         <Controls />
       </ReactFlow>
       {menuVisible && renderContextMenu(menuPosition)}
+      {showProfileDetails && (
+        <ProfileDetails
+          handleClose={handleHideProfileDetails}
+          profile={selectedProfile}
+        />
+      )}
+      {showEditProfileDetails && (
+        <EditProfileDetails
+          profile={{}}
+          onSave={() => {}}
+          handleClose={handleHideEditProfileDetails}
+        />
+      )}
     </div>
   );
 };

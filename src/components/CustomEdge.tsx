@@ -18,8 +18,8 @@ export default function CustomEdge(props: EdgeProps) {
     targetY,
     sourcePosition,
     targetPosition,
-    sourceHandle,
-    targetHandle,
+    // sourceHandle,
+    // targetHandle,
   } = props;
 
   const { setEdges } = useReactFlow();
@@ -38,7 +38,7 @@ export default function CustomEdge(props: EdgeProps) {
   return (
     <>
       {/* Remplacez BezierEdge par SmoothStepEdge */}
-      <SmoothStepEdge {...props} path={edgePath} />
+      <SmoothStepEdge {...props} />
       <EdgeLabelRenderer>
         <Button
           variant="icon"

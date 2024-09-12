@@ -2,10 +2,12 @@ export const NodeCustomContextMenu = ({
   menuPosition,
   nodeId,
   onRemoveProfile,
+  onShowEditProfile,
 }: {
   menuPosition: { x: number; y: number };
   nodeId: string;
   onRemoveProfile: (id: string) => void;
+  onShowEditProfile: () => void;
 }) => {
   return (
     <div
@@ -13,6 +15,12 @@ export const NodeCustomContextMenu = ({
       style={{ top: menuPosition.y, left: menuPosition.x }}
     >
       <ul className="list-none p-0 m-0">
+        <li
+          className="py-[8px] px-[12px] cursor-pointer hover:bg-gray-700 text-white"
+          onClick={onShowEditProfile}
+        >
+          Edit profile
+        </li>
         <li
           className="py-[8px] px-[12px] cursor-pointer hover:bg-gray-700 text-white"
           onClick={() => onRemoveProfile(nodeId)}
