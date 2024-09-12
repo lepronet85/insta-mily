@@ -1,8 +1,8 @@
 import {
-  BezierEdge,
+  SmoothStepEdge,
   EdgeLabelRenderer,
   EdgeProps,
-  getBezierPath,
+  getSmoothStepPath,
   useReactFlow,
 } from "@xyflow/react";
 import React from "react";
@@ -18,21 +18,27 @@ export default function CustomEdge(props: EdgeProps) {
     targetY,
     sourcePosition,
     targetPosition,
+    sourceHandle,
+    targetHandle,
   } = props;
 
   const { setEdges } = useReactFlow();
 
-  const [edgePath, labelX, labelY] = getBezierPath({
+  // Utilisation de getSmoothStepPath pour générer le chemin de l'arête
+  const [edgePath, labelX, labelY] = getSmoothStepPath({
     sourceX,
     sourceY,
+    sourcePosition,
     targetX,
     targetY,
-    sourcePosition,
     targetPosition,
+    borderRadius: 20, // Vous pouvez ajuster le radius selon votre besoin
   });
+
   return (
     <>
-      <BezierEdge {...props} />
+      {/* Remplacez BezierEdge par SmoothStepEdge */}
+      <SmoothStepEdge {...props} path={edgePath} />
       <EdgeLabelRenderer>
         <Button
           variant="icon"
