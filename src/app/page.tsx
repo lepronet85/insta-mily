@@ -18,6 +18,9 @@ import { useCallback, useEffect, useState } from "react";
 import dagre from "dagre";
 import CustomEdge from "@/components/CustomEdge";
 import { NodeCustomContextMenu } from "@/components/NodeCustomContextMenu";
+import { Position } from "@xyflow/react";
+import ProfileDetails from "@/components/ProfileDetails";
+import EditProfileDetails from "@/components/EditProfileDetails";
 
 const initialNodes: Node[] = [
   {
@@ -54,10 +57,6 @@ dagreGraph.setDefaultEdgeLabel(() => ({}));
 
 const nodeWidth = 172;
 const nodeHeight = 82;
-
-import { Position } from "@xyflow/react";
-import ProfileDetails from "@/components/ProfileDetails";
-import EditProfileDetails from "@/components/EditProfileDetails";
 
 const getLayoutedElements = (
   nodes: Node[],

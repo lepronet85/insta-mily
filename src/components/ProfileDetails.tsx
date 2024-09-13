@@ -87,15 +87,69 @@ const ProfileDetails = ({
         <h3 className="text-lg font-semibold mb-2">Galerie d'Images</h3>
         <div className="grid grid-cols-3 gap-2 max-h-48 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
           {/* Placeholders for images */}
-          <div className="w-full h-24 bg-gray-600 rounded-lg cursor-pointer"></div>
-          <div className="w-full h-24 bg-gray-600 rounded-lg cursor-pointer"></div>
-          <div className="w-full h-24 bg-gray-600 rounded-lg cursor-pointer"></div>
-          <div className="w-full h-24 bg-gray-600 rounded-lg cursor-pointer"></div>
-          <div className="w-full h-24 bg-gray-600 rounded-lg cursor-pointer"></div>
-          <div className="w-full h-24 bg-gray-600 rounded-lg cursor-pointer"></div>
-          <div className="w-full h-24 bg-gray-600 rounded-lg cursor-pointer"></div>
-          <div className="w-full h-24 bg-gray-600 rounded-lg cursor-pointer"></div>
-          <div className="w-full h-24 bg-gray-600 rounded-lg cursor-pointer"></div>
+          <div className="w-full h-24 bg-gray-600 rounded-lg cursor-pointer overflow-hidden">
+            <img
+              src="https://avatars.githubusercontent.com/u/1"
+              alt="Image 1"
+              className="w-full h-full"
+            />
+          </div>
+          <div className="w-full h-24 bg-gray-600 rounded-lg cursor-pointer overflow-hidden">
+            <img
+              src="https://avatars.githubusercontent.com/u/2"
+              alt="Image 1"
+              className="w-full h-full"
+            />
+          </div>
+          <div className="w-full h-24 bg-gray-600 rounded-lg cursor-pointer overflow-hidden">
+            <img
+              src="https://avatars.githubusercontent.com/u/3"
+              alt="Image 1"
+              className="w-full h-full"
+            />
+          </div>
+          <div className="w-full h-24 bg-gray-600 rounded-lg cursor-pointer overflow-hidden">
+            <img
+              src="https://avatars.githubusercontent.com/u/4"
+              alt="Image 1"
+              className="w-full h-full"
+            />
+          </div>
+          <div className="w-full h-24 bg-gray-600 rounded-lg cursor-pointer overflow-hidden">
+            <img
+              src="https://avatars.githubusercontent.com/u/5"
+              alt="Image 1"
+              className="w-full h-full"
+            />
+          </div>
+          <div className="w-full h-24 bg-gray-600 rounded-lg cursor-pointer overflow-hidden">
+            <img
+              src="https://avatars.githubusercontent.com/u/6"
+              alt="Image 1"
+              className="w-full h-full"
+            />
+          </div>
+          <div className="w-full h-24 bg-gray-600 rounded-lg cursor-pointer overflow-hidden">
+            <img
+              src="https://avatars.githubusercontent.com/u/7"
+              alt="Image 1"
+              className="w-full h-full"
+            />
+          </div>
+          <div className="w-full h-24 bg-gray-600 rounded-lg cursor-pointer overflow-hidden">
+            <img
+              src="https://avatars.githubusercontent.com/u/8"
+              alt="Image 1"
+              className="w-full h-full"
+            />
+          </div>
+          <div className="w-full h-24 bg-gray-600 rounded-lg cursor-pointer overflow-hidden">
+            <img
+              src="https://avatars.githubusercontent.com/u/9"
+              alt="Image 1"
+              className="w-full h-full"
+            />
+          </div>
         </div>
       </div>
       <div className="flex justify-between items-center">

@@ -119,7 +119,7 @@ const EditProfileDetails = ({
       </div>
       <div className="mb-4">
         <h3 className="text-lg font-semibold mb-2">Galerie d'Images</h3>
-        {images.map((image, index) => (
+        {images.map((image: string, index: number) => (
           <div key={index} className="mb-2">
             <input
               type="text"
