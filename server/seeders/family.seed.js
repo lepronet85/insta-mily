@@ -1,4 +1,4 @@
-const Family = require("../models/Family");
+const Family = require("../models/family.model");
 
 // Crée une famille avec certains utilisateurs
 const createFamilies = async (users) => {

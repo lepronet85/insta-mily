@@ -1,4 +1,4 @@
-const Gallery = require("../models/Gallery");
+const Gallery = require("../models/gallery.model");
 
 // Crée des galeries de photos pour chaque utilisateur
 const createGalleries = async (users) => {

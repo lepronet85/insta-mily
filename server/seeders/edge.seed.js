@@ -1,4 +1,4 @@
-const Edge = require("../models/Edge");
+const Edge = require("../models/edge.model");
 
 const createEdges = async (nodes) => {
   try {
