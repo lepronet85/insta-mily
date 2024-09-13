@@ -1,8 +1,8 @@
-import NodeController from "../controllers/node.controller";
+import EdgeController from "../controllers/edge.controller";
 
 const express = require("express");
 const router = express.Router();
 
-router.get("/", NodeController);
+router.get("/", EdgeController);
 
 module.exports = router;
