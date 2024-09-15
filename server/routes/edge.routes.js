@@ -1,8 +1,19 @@
-const EdgeController = require("../controllers/edge.controller");
+const {
+  getAllEdges,
+  getEdgeById,
+  updateEdge,
+  createEdge,
+  deleteEdge,
+} = require("../controllers/edge.controller");
 
 const express = require("express");
 const router = express.Router();
 
-router.get("/", EdgeController);
+// Routes CRUD pour les edges
+router.post("/", createEdge); // Créer un edge
+router.get("/", getAllEdges); // Obtenir tous les edges
+router.get("/:id", getEdgeById); // Obtenir un edge par ID
+router.put("/:id", updateEdge); // Mettre à jour un edge
+router.delete("/:id", deleteEdge); // Supprimer un edge
 
 module.exports = router;
