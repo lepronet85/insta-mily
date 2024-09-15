@@ -21,6 +21,7 @@ import { NodeCustomContextMenu } from "@/components/NodeCustomContextMenu";
 import { Position } from "@xyflow/react";
 import ProfileDetails from "@/components/ProfileDetails";
 import EditProfileDetails from "@/components/EditProfileDetails";
+import AddNode from "@/components/AddNode";
 
 const initialNodes: Node[] = [
   {
@@ -117,6 +118,10 @@ const Plan = () => {
   const [showProfileDetails, setShowProfileDetails] = useState<boolean>(false);
   const [showEditProfileDetails, setShowEditProfileDetails] =
     useState<boolean>(false);
+  const [users, setUsers] = useState();
+  const [isLoading, setIsLoading] = useState(true);
+  const [timeUp, setTimeUp] = useState(false);
+  const [showAddNode, setShowAddNode] = useState(false);
 
   const handleContextMenu = (
     event: React.MouseEvent,
@@ -215,9 +220,100 @@ const Plan = () => {
     setShowEditProfileDetails(false);
   };
 
-  // useEffect(() => {
-  //   console.log(nodes);
-  // }, [nodes]);
+  const handleShowAddNode = () => {
+    setShowAddNode(true);
+  };
+
+  const handleHideAddNode = () => {
+    setShowAddNode(false);
+  };
+
+  const fetchUsers = async () => {
+    const res = await fetch("http://localhost:5000/api/users", {
+      next: { revalidate: 10 },
+    });
+
+    if (!res.ok) {
+      throw new Error("Failed to fetch data");
+    }
+
+    const users = await res.json();
+
+    setUsers(users);
+    console.log(users);
+  };
+
+  const fetchNodesAndEdges = async () => {
+    try {
+      // Récupérer les Nodes
+      const resNodes = await fetch("http://localhost:5000/api/nodes", {
+        next: { revalidate: 10 },
+      });
+
+      if (!resNodes.ok) {
+        throw new Error("Failed to fetch nodes");
+      }
+
+      const bdNodes = await resNodes.json();
+
+      // Récupérer les Edges
+      const resEdges = await fetch("http://localhost:5000/api/edges", {
+        next: { revalidate: 10 },
+      });
+
+      if (!resEdges.ok) {
+        throw new Error("Failed to fetch edges");
+      }
+
+      const bdEdges = await resEdges.json();
+
+      // Transformer les Nodes
+      const transformedNodes = bdNodes.map((node, index) => ({
+        id: node._id,
+        position: { x: 100, y: 100 * index },
+        data: {
+          profilePic: "https://avatars.githubusercontent.com/u/1",
+          profileId: node._id,
+        },
+        type: "user",
+      }));
+
+      // Transformer les Edges
+      const transformedEdges = bdEdges.map((edge) => ({
+        id: edge._id,
+        source: edge.from._id,
+        target: edge.to._id,
+        type: "customEdge",
+      }));
+
+      // Mettre à jour l'état
+      setNodes(transformedNodes);
+      setEdges(transformedEdges);
+
+      console.log(transformedNodes);
+      console.log(transformedEdges);
+
+      // Appeler onLayout après que toutes les données sont chargées
+      // onLayout("TB");
+
+      // Mettre à jour l'état de chargement
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Erreur lors de la récupération des données:", error);
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+    fetchNodesAndEdges();
+    if (!isLoading) {
+      setTimeout(() => {
+        setTimeUp(true);
+        onLayout("TB");
+      }, 1000);
+    }
+  }, [isLoading]);
 
   const renderContextMenu = (menuPosition: { x: number; y: number }) => {
     switch (selectedElementType) {
@@ -225,7 +321,7 @@ const Plan = () => {
         return (
           <CustomContextMenu
             menuPosition={menuPosition}
-            onAddProfile={handleAddProfile}
+            onAddProfile={handleShowAddNode}
             onLayout={onLayout}
           />
         );
@@ -244,50 +340,61 @@ const Plan = () => {
   };
 
   return (
-    <div
-      className="w-screen h-screen overflow-hidden relative"
-      onContextMenu={(e) => handleContextMenu(e, "background")}
-      onClick={handleClick}
-    >
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        nodeTypes={nodeTypes}
-        edgeTypes={edgeTypes}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        onNodeContextMenu={(event, node) =>
-          handleContextMenu(event, "node", node.id)
-        }
-        onNodeClick={(event, node) => handleShowProfileDetails(node.id)}
-        fitView
+    !isLoading &&
+    timeUp && (
+      <div
+        className="w-screen h-screen overflow-hidden relative"
+        onContextMenu={(e) => handleContextMenu(e, "background")}
+        onClick={handleClick}
       >
-        <Background
-          gap={16}
-          size={1}
-          color="#d9e2ec"
-          style={{
-            background: "linear-gradient(to right, #f0f4f8, #d9e2ec, #f0f4f8)",
-          }}
-        />
-        <Controls />
-      </ReactFlow>
-      {menuVisible && renderContextMenu(menuPosition)}
-      {showProfileDetails && (
-        <ProfileDetails
-          handleClose={handleHideProfileDetails}
-          profile={selectedProfile}
-        />
-      )}
-      {showEditProfileDetails && (
-        <EditProfileDetails
-          profile={{}}
-          onSave={() => {}}
-          handleClose={handleHideEditProfileDetails}
-        />
-      )}
-    </div>
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          nodeTypes={nodeTypes}
+          edgeTypes={edgeTypes}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          onNodeContextMenu={(event, node) =>
+            handleContextMenu(event, "node", node.id)
+          }
+          onNodeClick={(event, node) => handleShowProfileDetails(node.id)}
+          fitView
+        >
+          <Background
+            gap={16}
+            size={1}
+            color="#d9e2ec"
+            style={{
+              background:
+                "linear-gradient(to right, #f0f4f8, #d9e2ec, #f0f4f8)",
+            }}
+          />
+          <Controls />
+        </ReactFlow>
+        {menuVisible && renderContextMenu(menuPosition)}
+        {showProfileDetails && (
+          <ProfileDetails
+            handleClose={handleHideProfileDetails}
+            profile={selectedProfile}
+          />
+        )}
+        {showEditProfileDetails && (
+          <EditProfileDetails
+            profile={{}}
+            onSave={() => {}}
+            handleClose={handleHideEditProfileDetails}
+          />
+        )}
+        {showAddNode && (
+          <AddNode
+            handleClose={handleHideAddNode}
+            onSave={handleAddProfile}
+            users={users || []}
+          />
+        )}
+      </div>
+    )
   );
 };
 

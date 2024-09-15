@@ -1,4 +1,4 @@
-import FamilyController from "../controllers/family.controller";
+const FamilyController = require("../controllers/family.controller");
 
 const express = require("express");
 const router = express.Router();

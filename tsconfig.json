@@ -21,6 +21,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "server/index.js", "server/models/Edge.js", "server/models/Family.js", "server/models/FamilyChat.js", "server/models/Gallery.js", "server/models/Node.js", "server/models/PrivateMessage.js", "server/models/User.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "server/index.js", "server/models/edge.model.server/models/family.model.server/models/familyhat.jsamilyserver/models/gallery.model.server/models/node.mo.jseserver/models/private_message.modelserver/models/user.model.jsjs", "server/models/User.js"],
   "exclude": ["node_modules"]
 }

@@ -1,4 +1,4 @@
-import GalleryController from "../controllers/gallery.controller";
+const GalleryController = require("../controllers/gallery.controller");
 
 const express = require("express");
 const router = express.Router();

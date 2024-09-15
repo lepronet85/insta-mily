@@ -1,4 +1,4 @@
-import NodeController from "../controllers/node.controller";
+const NodeController = require("../controllers/node.controller");
 
 const express = require("express");
 const router = express.Router();

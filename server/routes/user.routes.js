@@ -1,4 +1,9 @@
-import UserController from "../controllers/user.controller";
+const {
+  getAllUsers,
+  getUserById,
+  updateUser,
+  deleteUser,
+} = require("../controllers/user.controller");
 
 const express = require("express");
 const router = express.Router();
