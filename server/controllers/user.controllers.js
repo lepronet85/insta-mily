@@ -4,7 +4,7 @@ exports.getAllUsers = async (req, res) => {
   try {
     const users = await User.find();
     res.json(users);
-  } catch {
+  } catch (err) {
     res.status(500).json({
       message: "Erreur lors de la récupération des utilisateurs",
       error: err.message,
@@ -14,8 +14,17 @@ exports.getAllUsers = async (req, res) => {
 
 exports.createUser = async (req, res) => {
   try {
-    const { username, email, password, profilePicture } = req.body;
-    const newUser = new User({ username, email, password, profilePicture });
+    const { username, name, email, password, profilePicture, gallery, family } =
+      req.body;
+    const newUser = new User({
+      username,
+      name,
+      email,
+      password,
+      profilePicture,
+      gallery,
+      family,
+    });
     await newUser.save();
     res.status(201).json(newUser);
   } catch (error) {
@@ -27,7 +36,7 @@ exports.createUser = async (req, res) => {
 
 exports.getUserById = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id).populate("familyMembers");
+    const user = await User.findById(req.params.id);
     if (!user) {
       return res.status(404).json({ error: "Utilisateur non trouvé" });
     }

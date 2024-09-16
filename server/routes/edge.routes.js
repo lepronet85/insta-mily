@@ -4,7 +4,7 @@ const {
   updateEdge,
   createEdge,
   deleteEdge,
-} = require("../controllers/edge.controller");
+} = require("../controllers/edge.controllers");
 
 const express = require("express");
 const router = express.Router();

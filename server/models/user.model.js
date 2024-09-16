@@ -6,7 +6,7 @@ const UserSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   profilePicture: { type: String },
-  familyMembers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  family: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   gallery: [{ type: String }],
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },

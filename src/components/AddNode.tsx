@@ -15,7 +15,10 @@ const AddNode = ({
   const [name, setName] = useState("");
   const [age, setAge] = useState("");
   const [relation, setRelation] = useState("");
-  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
+  const [profileImagePreview, setProfileImagePreview] = useState<string | null>(
+    null
+  );
   const [images, setImages] = useState<string[]>([]);
   const [position, setPosition] = useState({
     x: window.innerWidth - 320 - 40,
@@ -36,7 +39,37 @@ const AddNode = ({
   const handleProfileImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      setProfileImage(URL.createObjectURL(file));
+      setProfileImageFile(file); // Stocke le fichier dans l'état
+      setProfileImagePreview(URL.createObjectURL(file)); // Prévisualisation
+    }
+  };
+
+  const uploadProfileImage = async () => {
+    if (!profileImageFile) {
+      console.error("Aucun fichier sélectionné.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("image", profileImageFile);
+
+    try {
+      const response = await fetch("http://localhost:5000/api/upload_file", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Erreur lors du téléchargement de l'image");
+      }
+
+      const data = await response.json();
+      console.log("Image téléchargée avec succès:", data);
+
+      // Vous pouvez enregistrer le chemin de l'image dans votre backend ici
+      return data;
+    } catch (error) {
+      console.error("Erreur:", error);
     }
   };
 
@@ -44,10 +77,17 @@ const AddNode = ({
     setImages(images.filter((_, i) => i !== index));
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    const data = await uploadProfileImage();
     const newNode = isExistingUser
       ? { userId: selectedUser }
-      : { name, age, relation, profileImage, images };
+      : {
+          name,
+          age,
+          relation,
+          profileImage: data.path,
+          images,
+        };
     onSave(newNode);
     handleClose();
   };
@@ -128,9 +168,10 @@ const AddNode = ({
               onChange={(e) => setSelectedUser(e.target.value)}
               className="w-full p-2 rounded bg-gray-700 text-white"
             >
+              <option></option>
               {users.map((user) => (
-                <option key={user.id} value={user.id}>
-                  {user.username}
+                <option key={user._id} value={user._id}>
+                  {user.name}
                 </option>
               ))}
             </select>
@@ -182,9 +223,9 @@ const AddNode = ({
                   Sélectionner une image
                 </label>
               </div>
-              {profileImage && (
+              {profileImagePreview && (
                 <img
-                  src={profileImage}
+                  src={profileImagePreview}
                   alt="Profile"
                   className="w-24 h-24 object-cover rounded-full mt-2 mx-auto"
                 />

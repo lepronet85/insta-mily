@@ -1,4 +1,4 @@
-const Node = require("../models/node.models");
+const Node = require("../models/node.model");
 
 const createNodes = async (users) => {
   try {

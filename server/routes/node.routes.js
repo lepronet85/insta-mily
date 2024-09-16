@@ -4,7 +4,7 @@ const {
   createNode,
   updateNode,
   deleteNode,
-} = require("../controllers/node.controller");
+} = require("../controllers/node.controllers");
 
 const express = require("express");
 const router = express.Router();

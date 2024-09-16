@@ -4,7 +4,7 @@ const {
   createGallery,
   updateGallery,
   deleteGallery,
-} = require("../controllers/gallery.controller");
+} = require("../controllers/gallery.controllers");
 
 const express = require("express");
 const router = express.Router();

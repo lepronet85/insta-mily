@@ -24,15 +24,15 @@ import EditProfileDetails from "@/components/EditProfileDetails";
 import AddNode from "@/components/AddNode";
 
 const initialNodes: Node[] = [
-  {
-    id: "1",
-    position: { x: 100, y: 100 },
-    data: {
-      profilePic: "https://avatars.githubusercontent.com/u/1",
-      profileId: 1,
-    },
-    type: "user",
-  },
+  // {
+  //   id: "1",
+  //   position: { x: 100, y: 100 },
+  //   data: {
+  //     profilePic: "https://avatars.githubusercontent.com/u/1",
+  //     profileId: 1,
+  //   },
+  //   type: "user",
+  // },
 ];
 
 const initialEdges: Edge[] = [
@@ -160,24 +160,112 @@ const Plan = () => {
     [edges]
   );
 
-  const handleAddProfile = () => {
-    const location = Math.random() * 500;
-    setNodes((prevNodes) => [
-      ...prevNodes,
-      {
-        id: `${Date.now()}`,
-        data: {
-          profilePic: `https://avatars.githubusercontent.com/u/${
-            prevNodes.length + 1
-          }`,
-          profileId: prevNodes.length + 1,
+  // const handleAddProfile = (newNode: any) => {
+  //   console.log(newNode);
+  //   // const location = Math.random() * 500;
+  //   // setNodes((prevNodes) => [
+  //   //   ...prevNodes,
+  //   //   {
+  //   //     id: `${Date.now()}`,
+  //   //     data: {
+  //   //       profilePic: `https://avatars.githubusercontent.com/u/${
+  //   //         prevNodes.length + 1
+  //   //       }`,
+  //   //       profileId: prevNodes.length + 1,
+  //   //     },
+  //   //     type: "user",
+  //   //     position: { x: location, y: location },
+  //   //     targetPosition: Position.Top,
+  //   //     sourcePosition: Position.Bottom,
+  //   //   },
+  //   // ]);
+  // };
+
+  const handleAddProfile = async (newNode: any) => {
+    console.log(newNode);
+    try {
+      // Si l'utilisateur est nouveau, créez l'utilisateur d'abord
+      let userId = newNode.userId;
+
+      if (!userId) {
+        // Création d'un nouvel utilisateur
+        const username = (newNode.name.toLowerCase() + Date.now())
+          .trim()
+          .split(" ")
+          .join("");
+        console.log({
+          username,
+          name: newNode.name,
+          email: username + "@example.com", // Remplacez par un email valide
+          password: username, // Remplacez par un mot de passe sécurisé
+          profilePicture: newNode.profileImage,
+          gallery: newNode.images || [],
+        });
+        const userResponse = await fetch("http://localhost:5000/api/users", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username,
+            name: newNode.name,
+            email: username + "@example.com", // Remplacez par un email valide
+            password: username, // Remplacez par un mot de passe sécurisé
+            // family: "s",
+            profilePicture: newNode.profileImage,
+            gallery: newNode.images || [],
+          }),
+        });
+
+        if (!userResponse.ok) {
+          throw new Error("Failed to create user");
+        }
+
+        const userData = await userResponse.json();
+        userId = userData._id; // Utilisez l'ID de l'utilisateur nouvellement créé
+      }
+
+      // Création du nœud en utilisant l'ID de l'utilisateur
+      const nodeResponse = await fetch("http://localhost:5000/api/nodes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-        type: "user",
-        position: { x: location, y: location },
-        targetPosition: Position.Top,
-        sourcePosition: Position.Bottom,
-      },
-    ]);
+        body: JSON.stringify({
+          user: userId,
+          dateOfBirth: newNode.dateOfBirth || null,
+          dateOfDeath: newNode.dateOfDeath || null,
+          gender: "male",
+          relationships: newNode.relationships || [],
+        }),
+      });
+
+      if (!nodeResponse.ok) {
+        throw new Error("Failed to create node");
+      }
+
+      const nodeData = await nodeResponse.json();
+
+      // Mise à jour des nœuds dans l'état si nécessaire
+      setNodes((prevNodes) => [
+        ...prevNodes,
+        {
+          id: nodeData._id,
+          data: {
+            profileId: userId,
+          },
+          type: "user",
+          position: newNode.position || {
+            x: Math.random() * 500,
+            y: Math.random() * 500,
+          },
+          targetPosition: Position.Top,
+          sourcePosition: Position.Bottom,
+        },
+      ]);
+    } catch (error) {
+      console.error("Error adding profile:", error);
+    }
   };
 
   const handleRemoveProfile = (nodeId: string) => {
@@ -256,6 +344,33 @@ const Plan = () => {
 
       const bdNodes = await resNodes.json();
 
+      // Vérifier que bdNodes est un tableau et qu'il contient des éléments
+      if (Array.isArray(bdNodes) && bdNodes.length > 0) {
+        const transformedNodes = bdNodes
+          .map((node, index) => {
+            if (node && node._id) {
+              // Vérifier que node et node._id existent
+              return {
+                id: node._id,
+                position: { x: 100, y: 100 * index },
+                data: {
+                  profileId: node.user._id,
+                },
+                type: "user",
+              };
+            }
+            return null; // ou gérez le cas où node est invalide
+          })
+          .filter((node) => node !== null); // Filtrer les nœuds invalides
+
+        // Mettre à jour l'état
+        setNodes(transformedNodes);
+        console.log(transformedNodes);
+      } else {
+        // Pas de nœuds à traiter
+        setNodes([]);
+      }
+
       // Récupérer les Edges
       const resEdges = await fetch("http://localhost:5000/api/edges", {
         next: { revalidate: 10 },
@@ -267,31 +382,30 @@ const Plan = () => {
 
       const bdEdges = await resEdges.json();
 
-      // Transformer les Nodes
-      const transformedNodes = bdNodes.map((node, index) => ({
-        id: node._id,
-        position: { x: 100, y: 100 * index },
-        data: {
-          profilePic: "https://avatars.githubusercontent.com/u/1",
-          profileId: node._id,
-        },
-        type: "user",
-      }));
+      // Vérifier que bdEdges est un tableau et qu'il contient des éléments
+      if (Array.isArray(bdEdges) && bdEdges.length > 0) {
+        const transformedEdges = bdEdges
+          .map((edge) => {
+            if (edge && edge._id && edge.from && edge.to) {
+              // Vérifier que edge et ses propriétés existent
+              return {
+                id: edge._id,
+                source: edge.from._id,
+                target: edge.to._id,
+                type: "customEdge",
+              };
+            }
+            return null; // ou gérez le cas où edge est invalide
+          })
+          .filter((edge) => edge !== null); // Filtrer les arêtes invalides
 
-      // Transformer les Edges
-      const transformedEdges = bdEdges.map((edge) => ({
-        id: edge._id,
-        source: edge.from._id,
-        target: edge.to._id,
-        type: "customEdge",
-      }));
-
-      // Mettre à jour l'état
-      setNodes(transformedNodes);
-      setEdges(transformedEdges);
-
-      console.log(transformedNodes);
-      console.log(transformedEdges);
+        // Mettre à jour l'état
+        setEdges(transformedEdges);
+        console.log(transformedEdges);
+      } else {
+        // Pas d'arêtes à traiter
+        setEdges([]);
+      }
 
       // Appeler onLayout après que toutes les données sont chargées
       // onLayout("TB");
