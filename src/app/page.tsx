@@ -160,27 +160,6 @@ const Plan = () => {
     [edges]
   );
 
-  // const handleAddProfile = (newNode: any) => {
-  //   console.log(newNode);
-  //   // const location = Math.random() * 500;
-  //   // setNodes((prevNodes) => [
-  //   //   ...prevNodes,
-  //   //   {
-  //   //     id: `${Date.now()}`,
-  //   //     data: {
-  //   //       profilePic: `https://avatars.githubusercontent.com/u/${
-  //   //         prevNodes.length + 1
-  //   //       }`,
-  //   //       profileId: prevNodes.length + 1,
-  //   //     },
-  //   //     type: "user",
-  //   //     position: { x: location, y: location },
-  //   //     targetPosition: Position.Top,
-  //   //     sourcePosition: Position.Bottom,
-  //   //   },
-  //   // ]);
-  // };
-
   const handleAddProfile = async (newNode: any) => {
     console.log(newNode);
     try {

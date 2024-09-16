@@ -65,3 +65,20 @@ exports.deleteEdge = async (req, res) => {
     res.status(500).json({ error: "Erreur lors de la suppression du edge" });
   }
 };
+
+exports.deleteNodeEdges = async (req, res) => {
+  const { nodeId } = req.params;
+
+  try {
+    // Supprimer tous les edges où le nodeId est soit source soit target
+    await Edge.deleteMany({
+      $or: [{ source: nodeId }, { target: nodeId }],
+    });
+
+    res.json({ message: "Edges supprimés avec succès." });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Erreur lors de la suppression des edges", error });
+  }
+};
