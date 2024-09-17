@@ -70,9 +70,8 @@ exports.deleteNodeEdges = async (req, res) => {
   const { nodeId } = req.params;
 
   try {
-    // Supprimer tous les edges où le nodeId est soit source soit target
     await Edge.deleteMany({
-      $or: [{ source: nodeId }, { target: nodeId }],
+      $or: [{ from: nodeId }, { to: nodeId }],
     });
 
     res.json({ message: "Edges supprimés avec succès." });

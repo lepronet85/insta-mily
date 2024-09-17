@@ -46,9 +46,20 @@ export default function CustomEdge(props: EdgeProps) {
           style={{
             transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
           }}
-          onClick={() =>
-            setEdges((prevEdges) => prevEdges.filter((edge) => edge.id !== id))
-          }
+          onClick={async () => {
+            const edgeResponse = await fetch(
+              `http://localhost:5000/api/edges/${id}`,
+              {
+                method: "DELETE",
+              }
+            );
+
+            if (!edgeResponse.ok) {
+              throw new Error("Erreur lors de la suppression du nœud");
+            }
+
+            setEdges((prevEdges) => prevEdges.filter((edge) => edge.id !== id));
+          }}
         >
           <MdOutlineClear />
         </Button>

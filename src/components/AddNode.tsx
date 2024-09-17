@@ -78,7 +78,11 @@ const AddNode = ({
   };
 
   const handleSave = async () => {
-    const data = await uploadProfileImage();
+    let data = null;
+    if (!isExistingUser) {
+      data = await uploadProfileImage();
+    }
+
     const newNode = isExistingUser
       ? { userId: selectedUser }
       : {

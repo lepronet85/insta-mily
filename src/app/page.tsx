@@ -145,17 +145,50 @@ const Plan = () => {
     setSelectedElementId(null);
   };
 
+  // const onConnect = useCallback(
+  //   (connection: Connection) => {
+  //     const edge = {
+  //       ...connection,
+  //       animated: true,
+  //       id: `${Date.now()}`,
+  //       type: "customEdge",
+  //     };
+  //     setEdges((prevEdges) =>
+  //       addEdge({ ...edge, animated: edge.animated ?? true }, prevEdges)
+  //     );
+  //   },
+  //   [edges]
+  // );
+
   const onConnect = useCallback(
-    (connection: Connection) => {
-      const edge = {
-        ...connection,
-        animated: true,
-        id: `${Date.now()}`,
-        type: "customEdge",
-      };
-      setEdges((prevEdges) =>
-        addEdge({ ...edge, animated: edge.animated ?? true }, prevEdges)
-      );
+    async (connection: Connection) => {
+      try {
+        const response = await fetch("http://localhost:5000/api/edges", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            from: connection.source,
+            to: connection.target,
+            relationshipType: "parent", // ou autre relation dynamique
+          }),
+        });
+
+        if (!response.ok)
+          throw new Error("Erreur lors de la création de l'edge");
+
+        const data = await response.json();
+
+        // Ajouter l'edge au frontend avec l'ID du backend
+        const edge = {
+          id: data._id,
+          ...connection,
+          animated: true,
+          type: "customEdge",
+        };
+        setEdges((prevEdges) => addEdge(edge, prevEdges));
+      } catch (error) {
+        console.error("Erreur:", error);
+      }
     },
     [edges]
   );
@@ -247,13 +280,56 @@ const Plan = () => {
     }
   };
 
-  const handleRemoveProfile = (nodeId: string) => {
-    setNodes((prevNodes) => prevNodes.filter((node) => node.id !== nodeId));
-    setEdges((prevEdges) =>
-      prevEdges.filter(
-        (edge) => edge.source !== nodeId && edge.target !== nodeId
-      )
-    );
+  // const handleRemoveProfile = (nodeId: string) => {
+  //   setNodes((prevNodes) => prevNodes.filter((node) => node.id !== nodeId));
+  //   setEdges((prevEdges) =>
+  //     prevEdges.filter(
+  //       (edge) => edge.source !== nodeId && edge.target !== nodeId
+  //     )
+  //   );
+  // };
+
+  const handleRemoveProfile = async (nodeId: string) => {
+    try {
+      // Supprimer tous les edges associés au nœud
+      const edgeResponse = await fetch(
+        `http://localhost:5000/api/edges/byNode/${nodeId}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (!edgeResponse.ok) {
+        throw new Error("Erreur lors de la suppression des edges");
+      }
+
+      // Supprimer le nœud
+      const nodeResponse = await fetch(
+        `http://localhost:5000/api/nodes/${nodeId}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (!nodeResponse.ok) {
+        throw new Error("Erreur lors de la suppression du nœud");
+      }
+
+      // Mettre à jour l'état des nœuds et des edges dans React
+      setNodes((prevNodes) => prevNodes.filter((node) => node.id !== nodeId));
+      setEdges((prevEdges) =>
+        prevEdges.filter(
+          (edge) => edge.source !== nodeId && edge.target !== nodeId
+        )
+      );
+
+      console.log("Nœud et edges supprimés avec succès.");
+    } catch (error) {
+      console.error(
+        "Erreur lors de la suppression du nœud et des edges:",
+        error
+      );
+    }
   };
 
   const onLayout = useCallback(
