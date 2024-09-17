@@ -20,6 +20,7 @@ const AddNode = ({
     null
   );
   const [images, setImages] = useState<string[]>([]);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [position, setPosition] = useState({
     x: window.innerWidth - 320 - 40,
     y: 40,
@@ -27,12 +28,47 @@ const AddNode = ({
   const [isDragging, setIsDragging] = useState(false);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
 
-  const handleAddImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAddImages = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      const fileArray = Array.from(e.target.files).map((file) =>
-        URL.createObjectURL(file)
-      );
-      setImages((prevImages) => prevImages.concat(fileArray));
+      const filesArray = Array.from(e.target.files);
+
+      // Concaténer les nouveaux fichiers avec ceux déjà sélectionnés
+      setImages((prevImages) => [
+        ...prevImages,
+        ...filesArray.map((file) => URL.createObjectURL(file)),
+      ]);
+      setImageFiles((prevFiles) =>
+        prevFiles ? [...prevFiles, ...filesArray] : filesArray
+      ); // Concaténer les nouveaux fichiers
+    }
+  };
+
+  const uploadImages = async () => {
+    if (!imageFiles || imageFiles.length === 0) {
+      console.error("Aucun fichier sélectionné.");
+      return;
+    }
+
+    const formData = new FormData();
+    imageFiles.forEach((file) => formData.append("images", file));
+
+    try {
+      const response = await fetch("http://localhost:5000/api/upload_files", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Erreur lors du téléchargement des images");
+      }
+
+      const data = await response.json();
+      console.log("Images téléchargées avec succès:", data);
+
+      // Gérer les chemins d'images téléchargées ici
+      return data;
+    } catch (error) {
+      console.error("Erreur:", error);
     }
   };
 
@@ -79,8 +115,10 @@ const AddNode = ({
 
   const handleSave = async () => {
     let data = null;
+    let imagesData = null;
     if (!isExistingUser) {
       data = await uploadProfileImage();
+      imagesData = await uploadImages();
     }
 
     const newNode = isExistingUser
@@ -90,7 +128,7 @@ const AddNode = ({
           age: parseInt(age),
           description,
           profileImage: data.path,
-          images,
+          images: imagesData.paths,
         };
     onSave(newNode);
     handleClose();
@@ -258,7 +296,7 @@ const AddNode = ({
                   type="file"
                   multiple
                   accept="image/*"
-                  onChange={handleAddImage}
+                  onChange={handleAddImages}
                   className="hidden"
                   id="galleryImageInput"
                 />

@@ -1,6 +1,6 @@
 import { Node } from "@xyflow/react";
 import React, { useState, useEffect } from "react";
-import { FaTimes, FaEnvelope } from "react-icons/fa";
+import { FaTimes, FaEnvelope, FaArrowLeft, FaArrowRight } from "react-icons/fa";
 
 const ProfileDetails = ({
   handleClose,
@@ -12,7 +12,9 @@ const ProfileDetails = ({
   const [position, setPosition] = useState({ x: 40, y: 40 });
   const [isDragging, setIsDragging] = useState(false);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
-  const [user, setUser] = useState<any | null>();
+  const [user, setUser] = useState<any | null>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsDragging(true);
@@ -42,7 +44,7 @@ const ProfileDetails = ({
     setIsDragging(false);
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseup", handleMouseUp);
     return () => {
@@ -80,6 +82,25 @@ const ProfileDetails = ({
     fetchUserData();
   }, [profile]);
 
+  const handleImageClick = (index: number) => {
+    setCurrentImageIndex(index);
+    setIsFullscreen(true);
+  };
+
+  const handleNextImage = () => {
+    setCurrentImageIndex((prevIndex) => (prevIndex + 1) % user.gallery.length);
+  };
+
+  const handlePrevImage = () => {
+    setCurrentImageIndex(
+      (prevIndex) => (prevIndex - 1 + user.gallery.length) % user.gallery.length
+    );
+  };
+
+  const handleCloseFullscreen = () => {
+    setIsFullscreen(false);
+  };
+
   return (
     user && (
       <div
@@ -116,70 +137,19 @@ const ProfileDetails = ({
         <div className="mb-4">
           <h3 className="text-lg font-semibold mb-2">Galerie d'Images</h3>
           <div className="grid grid-cols-3 gap-2 max-h-48 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
-            {/* Placeholders for images */}
-            <div className="w-full h-24 bg-gray-600 rounded-lg cursor-pointer overflow-hidden">
-              <img
-                src="https://avatars.githubusercontent.com/u/1"
-                alt="Image 1"
-                className="w-full h-full"
-              />
-            </div>
-            <div className="w-full h-24 bg-gray-600 rounded-lg cursor-pointer overflow-hidden">
-              <img
-                src="https://avatars.githubusercontent.com/u/2"
-                alt="Image 1"
-                className="w-full h-full"
-              />
-            </div>
-            <div className="w-full h-24 bg-gray-600 rounded-lg cursor-pointer overflow-hidden">
-              <img
-                src="https://avatars.githubusercontent.com/u/3"
-                alt="Image 1"
-                className="w-full h-full"
-              />
-            </div>
-            <div className="w-full h-24 bg-gray-600 rounded-lg cursor-pointer overflow-hidden">
-              <img
-                src="https://avatars.githubusercontent.com/u/4"
-                alt="Image 1"
-                className="w-full h-full"
-              />
-            </div>
-            <div className="w-full h-24 bg-gray-600 rounded-lg cursor-pointer overflow-hidden">
-              <img
-                src="https://avatars.githubusercontent.com/u/5"
-                alt="Image 1"
-                className="w-full h-full"
-              />
-            </div>
-            <div className="w-full h-24 bg-gray-600 rounded-lg cursor-pointer overflow-hidden">
-              <img
-                src="https://avatars.githubusercontent.com/u/6"
-                alt="Image 1"
-                className="w-full h-full"
-              />
-            </div>
-            <div className="w-full h-24 bg-gray-600 rounded-lg cursor-pointer overflow-hidden">
-              <img
-                src="https://avatars.githubusercontent.com/u/7"
-                alt="Image 1"
-                className="w-full h-full"
-              />
-            </div>
-            <div className="w-full h-24 bg-gray-600 rounded-lg cursor-pointer overflow-hidden">
-              <img
-                src="https://avatars.githubusercontent.com/u/8"
-                alt="Image 1"
-                className="w-full h-full"
-              />
-            </div>
-            <div className="w-full h-24 bg-gray-600 rounded-lg cursor-pointer overflow-hidden">
-              <img
-                src="https://avatars.githubusercontent.com/u/9"
-                alt="Image 1"
-                className="w-full h-full"
-              />
-            </div>
+            {user.gallery.map((image: string, index: number) => (
+              <div
+                key={index}
+                className="w-full h-24 bg-gray-600 rounded-lg cursor-pointer overflow-hidden"
+                onClick={() => handleImageClick(index)}
+              >
+                <img
+                  src={`http://localhost:5000${image}`}
+                  alt={`Image ${index + 1}`}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            ))}
           </div>
         </div>
         <div className="flex justify-between items-center">
@@ -188,6 +158,34 @@ const ProfileDetails = ({
             Envoyer un message
           </button>
         </div>
+
+        {isFullscreen && (
+          <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+            <button
+              className="absolute top-4 right-4 text-white text-2xl"
+              onClick={handleCloseFullscreen}
+            >
+              <FaTimes />
+            </button>
+            <button
+              className="absolute left-4 text-white text-2xl"
+              onClick={handlePrevImage}
+            >
+              <FaArrowLeft />
+            </button>
+            <img
+              src={`http://localhost:5000${user.gallery[currentImageIndex]}`}
+              alt={`Image ${currentImageIndex + 1}`}
+              className="max-w-full max-h-full object-contain"
+            />
+            <button
+              className="absolute right-4 text-white text-2xl"
+              onClick={handleNextImage}
+            >
+              <FaArrowRight />
+            </button>
+          </div>
+        )}
       </div>
     )
   );

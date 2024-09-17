@@ -57,6 +57,20 @@ app.post("/api/upload_file", upload.single("image"), (req, res) => {
   }
 });
 
+app.post("/api/upload_files", upload.array("images", 10), (req, res) => {
+  try {
+    const filePaths = req.files.map((file) => `/uploads/${file.filename}`);
+
+    res.json({
+      message: "Images uploadées avec succès",
+      files: req.files,
+      paths: filePaths, // Chemins des fichiers pour les utiliser dans le frontend
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Erreur lors de l'upload", error });
+  }
+});
+
 mongoose
   .connect(process.env.DATABASE_URL)
   .then(() => console.log("Connected to MongoDB"))
