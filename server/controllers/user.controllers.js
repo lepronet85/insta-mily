@@ -14,14 +14,25 @@ exports.getAllUsers = async (req, res) => {
 
 exports.createUser = async (req, res) => {
   try {
-    const { username, name, email, password, profilePicture, gallery, family } =
-      req.body;
+    const {
+      username,
+      name,
+      email,
+      password,
+      profilePicture,
+      description,
+      age,
+      gallery,
+      family,
+    } = req.body;
     const newUser = new User({
       username,
       name,
       email,
       password,
       profilePicture,
+      description,
+      age,
       gallery,
       family,
     });

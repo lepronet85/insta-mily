@@ -201,13 +201,12 @@ const AddNode = ({
               />
             </div>
             <div className="mb-4">
-              <label className="block text-gray-400 mb-2">Relation</label>
-              <input
-                type="text"
+              <label className="block text-gray-400 mb-2">Description</label>
+              <textarea
                 value={relation}
                 onChange={(e) => setRelation(e.target.value)}
-                className="w-full p-2 rounded bg-gray-700 text-white"
-              />
+                className="w-full p-2 rounded bg-gray-700 text-white resize-none"
+              ></textarea>
             </div>
             <div className="mb-4">
               <label className="block text-gray-400 mb-2">Profil</label>
