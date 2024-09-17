@@ -106,9 +106,12 @@ const ProfileDetails = ({
           />
           <div>
             <h3 className="text-lg font-semibold">{user.name}</h3>
-            <p className="text-gray-400">Age: 30</p>
-            <p className="text-gray-400">Relation: Cousin</p>
+            <p className="text-gray-400">Age: {user.age}</p>
+            <p className="text-gray-400">Relation: ?</p>
           </div>
+        </div>
+        <div className="mb-4">
+          <p className="text-gray-400 text-justify">{user.description}</p>
         </div>
         <div className="mb-4">
           <h3 className="text-lg font-semibold mb-2">Galerie d'Images</h3>

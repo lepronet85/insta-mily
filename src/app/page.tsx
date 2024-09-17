@@ -194,7 +194,6 @@ const Plan = () => {
   );
 
   const handleAddProfile = async (newNode: any) => {
-    console.log(newNode);
     try {
       // Si l'utilisateur est nouveau, créez l'utilisateur d'abord
       let userId = newNode.userId;
@@ -205,14 +204,7 @@ const Plan = () => {
           .trim()
           .split(" ")
           .join("");
-        console.log({
-          username,
-          name: newNode.name,
-          email: username + "@example.com", // Remplacez par un email valide
-          password: username, // Remplacez par un mot de passe sécurisé
-          profilePicture: newNode.profileImage,
-          gallery: newNode.images || [],
-        });
+
         const userResponse = await fetch("http://localhost:5000/api/users", {
           method: "POST",
           headers: {
@@ -224,6 +216,8 @@ const Plan = () => {
             email: username + "@example.com", // Remplacez par un email valide
             password: username, // Remplacez par un mot de passe sécurisé
             // family: "s",
+            age: newNode.age,
+            description: newNode.description,
             profilePicture: newNode.profileImage,
             gallery: newNode.images || [],
           }),

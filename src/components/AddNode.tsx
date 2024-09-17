@@ -14,7 +14,7 @@ const AddNode = ({
   const [selectedUser, setSelectedUser] = useState(users[0]?.id || "");
   const [name, setName] = useState("");
   const [age, setAge] = useState("");
-  const [relation, setRelation] = useState("");
+  const [description, setDescription] = useState("");
   const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
   const [profileImagePreview, setProfileImagePreview] = useState<string | null>(
     null
@@ -87,8 +87,8 @@ const AddNode = ({
       ? { userId: selectedUser }
       : {
           name,
-          age,
-          relation,
+          age: parseInt(age),
+          description,
           profileImage: data.path,
           images,
         };
@@ -150,7 +150,7 @@ const AddNode = ({
           <FaTimes />
         </button>
       </div>
-      <div className="max-h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
+      <div className="max-h-96 overflow-y-auto scrollbar- scrollbar-thumb-gray-600 scrollbar-track-gray-800">
         <div className="mb-4">
           <label className="block text-gray-400 mb-2">Type de Nœud</label>
           <select
@@ -203,8 +203,8 @@ const AddNode = ({
             <div className="mb-4">
               <label className="block text-gray-400 mb-2">Description</label>
               <textarea
-                value={relation}
-                onChange={(e) => setRelation(e.target.value)}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
                 className="w-full p-2 rounded bg-gray-700 text-white resize-none"
               ></textarea>
             </div>
