@@ -1,6 +1,6 @@
-import { FaEnvelope, FaLock, FaUserPlus } from "react-icons/fa";
+import { FaUsers, FaPlus } from "react-icons/fa";
 
-const Login = () => {
+const Family = () => {
   return (
     <div
       className="min-h-screen flex items-center justify-center"
@@ -21,34 +21,17 @@ const Login = () => {
           <div className="mb-4">
             <label
               className="block text-gray-400 text-sm font-bold mb-2"
-              htmlFor="email"
+              htmlFor="familyCode"
             >
-              Email
+              Code de Famille
             </label>
             <div className="flex items-center border rounded-lg bg-gray-800">
-              <FaEnvelope className="text-gray-400 ml-3" />
+              <FaUsers className="text-gray-400 ml-3" />
               <input
-                type="email"
-                id="email"
+                type="text"
+                id="familyCode"
                 className="w-full px-3 py-2 bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
-                placeholder="Email"
-              />
-            </div>
-          </div>
-          <div className="mb-6">
-            <label
-              className="block text-gray-400 text-sm font-bold mb-2"
-              htmlFor="password"
-            >
-              Mot de passe
-            </label>
-            <div className="flex items-center border rounded-lg bg-gray-800">
-              <FaLock className="text-gray-400 ml-3" />
-              <input
-                type="password"
-                id="password"
-                className="w-full px-3 py-2 bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
-                placeholder="Mot de passe"
+                placeholder="Entrez le code de famille"
               />
             </div>
           </div>
@@ -57,7 +40,7 @@ const Login = () => {
               type="submit"
               className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300"
             >
-              Se connecter
+              Rejoindre la Famille
             </button>
           </div>
           <div className="mt-4 text-center">
@@ -65,8 +48,8 @@ const Login = () => {
               type="button"
               className="text-blue-400 hover:text-blue-600 flex items-center justify-center"
             >
-              <FaUserPlus className="mr-2" />
-              Pas encore de compte ? Inscrivez-vous
+              <FaPlus className="mr-2" />
+              Créer une Nouvelle Famille
             </button>
           </div>
         </form>
@@ -75,4 +58,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Family;
