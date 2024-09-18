@@ -5,12 +5,15 @@ const helmet = require("helmet");
 const cors = require("cors");
 const multer = require("multer");
 const path = require("path");
+const passport = require("passport");
+require("./config/passport")(passport);
 
 const userRoutes = require("./routes/user.routes");
 const nodeRoutes = require("./routes/node.routes");
 const edgeRoutes = require("./routes/edge.routes");
 const galleryRoutes = require("./routes/gallery.routes");
 const familyRoutes = require("./routes/family.routes");
+const authRoutes = require("./routes/auth.routes");
 
 const app = express();
 
@@ -42,7 +45,7 @@ app.use("/api/nodes", nodeRoutes);
 app.use("/api/edges", edgeRoutes);
 app.use("/api/families", familyRoutes);
 app.use("/api/galleries", galleryRoutes);
-
+app.use("/api/auth/", authRoutes);
 // Route pour uploader une image
 app.post("/api/upload_file", upload.single("image"), (req, res) => {
   try {

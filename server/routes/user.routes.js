@@ -8,11 +8,24 @@ const {
 
 const express = require("express");
 const router = express.Router();
+const passport = require("passport");
 
-router.post("/", createUser); // Créer un utilisateur
-router.get("/", getAllUsers); // Obtenir tous les utilisateurs
-router.get("/:id", getUserById); // Obtenir un utilisateur par ID
-router.put("/:id", updateUser); // Mettre à jour un utilisateur
-router.delete("/:id", deleteUser); // Supprimer un utilisateur
+router.post("/", passport.authenticate("jwt", { session: false }), createUser); // Créer un utilisateur
+router.get("/", passport.authenticate("jwt", { session: false }), getAllUsers); // Obtenir tous les utilisateurs
+router.get(
+  "/:id",
+  passport.authenticate("jwt", { session: false }),
+  getUserById
+); // Obtenir un utilisateur par ID
+router.put(
+  "/:id",
+  passport.authenticate("jwt", { session: false }),
+  updateUser
+); // Mettre à jour un utilisateur
+router.delete(
+  "/:id",
+  passport.authenticate("jwt", { session: false }),
+  deleteUser
+); // Supprimer un utilisateur
 
 module.exports = router;
