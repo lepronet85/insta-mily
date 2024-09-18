@@ -188,7 +188,7 @@ const AddNode = ({
           <FaTimes />
         </button>
       </div>
-      <div className="max-h-96 overflow-y-auto scrollbar- scrollbar-thumb-gray-600 scrollbar-track-gray-800">
+      <div className="max-h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
         <div className="mb-4">
           <label className="block text-gray-400 mb-2">Type de Nœud</label>
           <select

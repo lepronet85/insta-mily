@@ -32,14 +32,16 @@ const Create = () => {
     <div
       className="min-h-screen flex items-center justify-center"
       style={{
-        background: "linear-gradient(to right, #2c3e50, #4ca1af, #2c3e50)",
+        background: "linear-gradient(to right, #f0f4f8, #d9e2ec, #f0f4f8)",
       }}
     >
       <div className="bg-gray-900 p-8 rounded-lg shadow-lg w-full max-w-md">
         <div className="flex justify-center mb-6">
           <div className="flex items-center">
-            <div className="text-4xl font-bold text-white mr-2">Insta</div>
-            <div className="text-4xl font-bold text-blue-400">Mily</div>
+            <div className="text-4xl font-bold text-white mr-2">
+              Insta
+              <span className="text-4xl font-bold text-blue-400">Mily</span>
+            </div>
           </div>
         </div>
         <form onSubmit={handleSubmit}>
