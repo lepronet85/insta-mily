@@ -1,6 +1,64 @@
+"use client";
+
+import React, { useState } from "react";
 import { FaEnvelope, FaLock, FaUserPlus } from "react-icons/fa";
+import { useRouter } from "next/navigation";
+import useUser from "@/hooks/useUser";
 
 const Login = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+
+    try {
+      const response = await fetch("http://localhost:5000/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Erreur lors de la connexion");
+      }
+
+      const data = await response.json();
+      document.cookie = `token=${data.token}; path=/; max-age=${
+        7 * 24 * 60 * 60
+      }; secure; samesite=strict`;
+      console.log(data.token.split(" ")[1]);
+      if (data) {
+        const meResponse = await fetch("http://localhost:5000/api/users/me", {
+          headers: {
+            Authorization: `Bearer ${data.token.split(" ")[1]}`,
+          },
+        });
+
+        if (meResponse.ok) {
+          const userData = await meResponse.json();
+          if (userData.family) {
+            router.push("/");
+          } else {
+            router.push("/family/join");
+          }
+        }
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("An unknown error occurred");
+      }
+    }
+  };
+
   return (
     <div
       className="min-h-screen flex items-center justify-center"
@@ -17,7 +75,8 @@ const Login = () => {
             </div>
           </div>
         </div>
-        <form>
+        <form onSubmit={handleSubmit}>
+          {error && <div className="text-red-500 mb-4">{error}</div>}
           <div className="mb-4">
             <label
               className="block text-gray-400 text-sm font-bold mb-2"
@@ -30,6 +89,8 @@ const Login = () => {
               <input
                 type="email"
                 id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-3 py-2 bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
                 placeholder="Email"
               />
@@ -47,6 +108,8 @@ const Login = () => {
               <input
                 type="password"
                 id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-3 py-2 bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
                 placeholder="Mot de passe"
               />
@@ -64,6 +127,7 @@ const Login = () => {
             <button
               type="button"
               className="text-blue-400 hover:text-blue-600 flex items-center justify-center"
+              onClick={() => router.push("/register")} // Remplacez par votre logique de navigation
             >
               <FaUserPlus className="mr-2" />
               Pas encore de compte ? Inscrivez-vous

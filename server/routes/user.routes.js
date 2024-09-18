@@ -4,6 +4,7 @@ const {
   updateUser,
   deleteUser,
   createUser,
+  getMe,
 } = require("../controllers/user.controllers");
 
 const express = require("express");
@@ -12,6 +13,7 @@ const passport = require("passport");
 
 router.post("/", passport.authenticate("jwt", { session: false }), createUser); // Créer un utilisateur
 router.get("/", passport.authenticate("jwt", { session: false }), getAllUsers); // Obtenir tous les utilisateurs
+router.get("/me", passport.authenticate("jwt", { session: false }), getMe);
 router.get(
   "/:id",
   passport.authenticate("jwt", { session: false }),

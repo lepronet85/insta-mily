@@ -1,4 +1,6 @@
-import React from "react";
+"use client";
+
+import React, { useState } from "react";
 import {
   FaUser,
   FaUserAlt,
@@ -6,8 +8,50 @@ import {
   FaLock,
   FaSignInAlt,
 } from "react-icons/fa";
+import { useRouter } from "next/navigation";
 
 const Register = () => {
+  const [username, setUsername] = useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setSuccess("");
+
+    try {
+      const response = await fetch("http://localhost:5000/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, name, email, password }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Erreur lors de l'inscription");
+      }
+
+      const data = await response.json();
+      setSuccess(
+        "Inscription réussie ! Vous pouvez maintenant vous connecter."
+      );
+      router.push("/auth/login"); // Rediriger vers la page de connexion
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("An unknown error occurred");
+      }
+    }
+  };
+
   return (
     <div
       className="min-h-screen flex items-center justify-center"
@@ -24,7 +68,9 @@ const Register = () => {
             </div>
           </div>
         </div>
-        <form>
+        <form onSubmit={handleSubmit}>
+          {error && <div className="text-red-500 mb-4">{error}</div>}
+          {success && <div className="text-green-500 mb-4">{success}</div>}
           <div className="mb-4">
             <label
               className="block text-gray-400 text-sm font-bold mb-2"
@@ -37,6 +83,8 @@ const Register = () => {
               <input
                 type="text"
                 id="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 className="w-full px-3 py-2 bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
                 placeholder="Nom d'utilisateur"
               />
@@ -54,6 +102,8 @@ const Register = () => {
               <input
                 type="text"
                 id="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 className="w-full px-3 py-2 bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
                 placeholder="Nom"
               />
@@ -71,6 +121,8 @@ const Register = () => {
               <input
                 type="email"
                 id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-3 py-2 bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
                 placeholder="Email"
               />
@@ -88,6 +140,8 @@ const Register = () => {
               <input
                 type="password"
                 id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-3 py-2 bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
                 placeholder="Mot de passe"
               />
@@ -105,6 +159,7 @@ const Register = () => {
             <button
               type="button"
               className="text-blue-400 hover:text-blue-600 flex items-center justify-center"
+              onClick={() => router.push("/login")} // Remplacez par votre logique de navigation
             >
               <FaSignInAlt className="mr-2" />
               Déjà un compte ? Connectez-vous
