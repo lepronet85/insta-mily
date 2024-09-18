@@ -11,9 +11,9 @@ const useUser = () => {
 
       if (token) {
         try {
-          const response = await fetch("http://localhost:5000/api/auth/me", {
+          const response = await fetch("http://localhost:5000/api/users/me", {
             headers: {
-              Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${token.split(" ")[1]}`,
             },
           });
 

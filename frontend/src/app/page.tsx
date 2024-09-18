@@ -22,6 +22,9 @@ import { Position } from "@xyflow/react";
 import ProfileDetails from "@/components/ProfileDetails";
 import EditProfileDetails from "@/components/EditProfileDetails";
 import AddNode from "@/components/AddNode";
+import { getCookie } from "cookies-next";
+import useUser from "@/hooks/useUser";
+import { useRouter } from "next/navigation";
 
 const initialNodes: Node[] = [
   // {
@@ -122,6 +125,8 @@ const Plan = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [timeUp, setTimeUp] = useState(false);
   const [showAddNode, setShowAddNode] = useState(false);
+  const router = useRouter();
+  const { user, loading } = useUser();
 
   const handleContextMenu = (
     event: React.MouseEvent,
@@ -144,21 +149,6 @@ const Plan = () => {
     setSelectedElementType(null);
     setSelectedElementId(null);
   };
-
-  // const onConnect = useCallback(
-  //   (connection: Connection) => {
-  //     const edge = {
-  //       ...connection,
-  //       animated: true,
-  //       id: `${Date.now()}`,
-  //       type: "customEdge",
-  //     };
-  //     setEdges((prevEdges) =>
-  //       addEdge({ ...edge, animated: edge.animated ?? true }, prevEdges)
-  //     );
-  //   },
-  //   [edges]
-  // );
 
   const onConnect = useCallback(
     async (connection: Connection) => {
@@ -273,15 +263,6 @@ const Plan = () => {
       console.error("Error adding profile:", error);
     }
   };
-
-  // const handleRemoveProfile = (nodeId: string) => {
-  //   setNodes((prevNodes) => prevNodes.filter((node) => node.id !== nodeId));
-  //   setEdges((prevEdges) =>
-  //     prevEdges.filter(
-  //       (edge) => edge.source !== nodeId && edge.target !== nodeId
-  //     )
-  //   );
-  // };
 
   const handleRemoveProfile = async (nodeId: string) => {
     try {
@@ -456,9 +437,6 @@ const Plan = () => {
         setEdges([]);
       }
 
-      // Appeler onLayout après que toutes les données sont chargées
-      // onLayout("TB");
-
       // Mettre à jour l'état de chargement
       setIsLoading(false);
     } catch (error) {
@@ -467,16 +445,21 @@ const Plan = () => {
     }
   };
 
-  useEffect(() => {
-    fetchUsers();
-    fetchNodesAndEdges();
-    if (!isLoading) {
-      setTimeout(() => {
-        setTimeUp(true);
-        onLayout("TB");
-      }, 1000);
-    }
-  }, [isLoading]);
+  // useEffect(() => {
+  //   fetchUsers();
+  //   fetchNodesAndEdges();
+  //   if (!isLoading) {
+  //     setTimeout(() => {
+  //       setTimeUp(true);
+  //       onLayout("TB");
+  //     }, 1000);
+  //   }
+  // }, [isLoading]);
+
+  // useEffect(() => {
+  //   if (!user?.family) router.push("/family/join");
+  //   console.log("Updated user:", user);
+  // }, [user]);
 
   const renderContextMenu = (menuPosition: { x: number; y: number }) => {
     switch (selectedElementType) {

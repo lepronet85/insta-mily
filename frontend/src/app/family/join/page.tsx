@@ -1,6 +1,10 @@
+"use client";
+
+import { useRouter } from "next/navigation";
 import { FaUsers, FaPlus } from "react-icons/fa";
 
 const Family = () => {
+  const router = useRouter();
   return (
     <div
       className="min-h-screen flex items-center justify-center"
@@ -47,6 +51,7 @@ const Family = () => {
             <button
               type="button"
               className="text-blue-400 hover:text-blue-600 flex items-center justify-center"
+              onClick={() => router.push("/family/create")}
             >
               <FaPlus className="mr-2" />
               Créer une Nouvelle Famille

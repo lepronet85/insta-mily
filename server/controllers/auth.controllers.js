@@ -41,7 +41,7 @@ exports.loginController = async (req, res) => {
 
     // Génération du token JWT
     const payload = { id: user.id, username: user.username };
-    const token = jwt.sign(payload, secretOrKey, { expiresIn: "1h" });
+    const token = jwt.sign(payload, secretOrKey, { expiresIn: "168h" });
 
     res.json({ token: `Bearer ${token}` });
   } catch (error) {

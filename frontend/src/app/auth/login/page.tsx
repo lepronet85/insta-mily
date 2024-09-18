@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import { FaEnvelope, FaLock, FaUserPlus } from "react-icons/fa";
 import { useRouter } from "next/navigation";
-import useUser from "@/hooks/useUser";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -44,6 +43,9 @@ const Login = () => {
         if (meResponse.ok) {
           const userData = await meResponse.json();
           if (userData.family) {
+            document.cookie = `familyCode=${
+              userData.family.code
+            }; path=/; max-age=${7 * 24 * 60 * 60}; secure; samesite=strict`;
             router.push("/");
           } else {
             router.push("/family/join");
