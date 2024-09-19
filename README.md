@@ -45,10 +45,6 @@ InstaMily is built with the latest technologies to ensure reliability, scalabili
 
 Contributions are welcome! If you have ideas to improve InstaMily, feel free to open an issue or submit a pull request.
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ## Contact
 
 For any inquiries or support, reach out to us:
