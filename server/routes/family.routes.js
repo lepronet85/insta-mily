@@ -4,16 +4,17 @@ const {
   getFamilyById,
   updateFamily,
   deleteFamily,
+  getFamilyMembers,
 } = require("../controllers/family.controllers");
 
 const express = require("express");
 const router = express.Router();
 
-router.post("/family", createFamily);
-router.get("/family", getAllFamilies);
-router.get("/family/:id", getFamilyById);
-router.put("/family/:id", updateFamily);
-router.delete("/family/:id", deleteFamily);
-router.get("/family/:id/members", getFamilyMembers);
+router.post("/", createFamily);
+router.get("/", getAllFamilies);
+router.get("/:id", getFamilyById);
+router.put("/:id", updateFamily);
+router.delete("/:id", deleteFamily);
+router.get("/:id/members", getFamilyMembers);
 
 module.exports = router;

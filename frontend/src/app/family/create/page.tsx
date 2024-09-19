@@ -1,32 +1,52 @@
 "use client";
-import { useState } from "react";
+import useUser from "@/hooks/useUser";
+import { useEffect, useState } from "react";
 import { FaUsers } from "react-icons/fa";
+import { getCookie } from "cookies-next";
+import { useRouter } from "next/navigation";
 
 const Create = () => {
   const [familyName, setFamilyName] = useState("");
+  const { user, loading } = useUser();
+  const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleCreateFamily = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
+      const token = getCookie("token");
+
+      if (!token) {
+        console.error("Utilisateur non authentifié.");
+        return;
+      }
+
       const response = await fetch("http://localhost:5000/api/families", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // Inclure le token JWT
         },
-        body: JSON.stringify({ familyName }),
+        body: JSON.stringify({ familyName, id: user.id }),
       });
 
-      if (!response.ok) {
-        throw new Error(`Erreur: ${response.statusText}`);
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Famille créée avec succès:", data);
+        document.cookie = `familyCode=${data.family.code}; path=/; max-age=${
+          7 * 24 * 60 * 60
+        }; secure; samesite=strict`;
+        router.push("/");
+      } else {
+        console.error("Erreur lors de la création de la famille.");
       }
-
-      const data = await response.json();
-      console.log("Famille créée avec succès:", data);
-      // Rediriger ou afficher un message de succès
     } catch (error) {
       console.error("Erreur lors de la création de la famille:", error);
     }
   };
+
+  useEffect(() => {
+    console.log(user);
+  }, [user]);
 
   return (
     <div
@@ -44,7 +64,7 @@ const Create = () => {
             </div>
           </div>
         </div>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleCreateFamily}>
           <div className="mb-4">
             <label
               className="block text-gray-400 text-sm font-bold mb-2"

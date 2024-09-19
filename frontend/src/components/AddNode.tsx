@@ -22,8 +22,8 @@ const AddNode = ({
   const [images, setImages] = useState<string[]>([]);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [position, setPosition] = useState({
-    x: window.innerWidth - 320 - 40,
-    y: 40,
+    x: window.innerWidth - 320 - 20,
+    y: 80,
   });
   const [isDragging, setIsDragging] = useState(false);
   const [offset, setOffset] = useState({ x: 0, y: 0 });

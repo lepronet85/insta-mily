@@ -2,18 +2,21 @@ import { Position } from "@xyflow/react";
 import React, { useEffect, useState } from "react";
 import CustomHandle from "./CustomHandle";
 import { NodeProps } from "react-flow-renderer";
+import { getCookie } from "cookies-next";
 
 const User = ({ data: { profileId } }: NodeProps<{ profileId: string }>) => {
   const [user, setUser] = useState<any | null>();
 
   const fetchUserData = async () => {
     try {
+      const token = getCookie("token");
       const userResponse = await fetch(
         `http://localhost:5000/api/users/${profileId}`,
         {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
+            Authorization: token,
           },
         }
       );
@@ -32,7 +35,7 @@ const User = ({ data: { profileId } }: NodeProps<{ profileId: string }>) => {
 
   useEffect(() => {
     fetchUserData();
-  }, []);
+  }, [profileId]);
 
   return (
     user && (

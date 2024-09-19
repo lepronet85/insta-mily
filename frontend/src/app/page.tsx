@@ -25,6 +25,7 @@ import AddNode from "@/components/AddNode";
 import { getCookie } from "cookies-next";
 import useUser from "@/hooks/useUser";
 import { useRouter } from "next/navigation";
+import Header from "@/components/header";
 
 const initialNodes: Node[] = [
   // {
@@ -141,6 +142,9 @@ const Plan = () => {
     setMenuPosition({ x: event.pageX, y: event.pageY });
     setSelectedElementType(elementType);
     setSelectedElementId(elementId || null);
+    const selectedElement = nodes.find((node) => node.id === elementId);
+    console.log(selectedElement);
+    setSelectedProfile(selectedElement || null);
     setMenuVisible(true);
   };
 
@@ -153,9 +157,10 @@ const Plan = () => {
   const onConnect = useCallback(
     async (connection: Connection) => {
       try {
+        const token = getCookie("token");
         const response = await fetch("http://localhost:5000/api/edges", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", Authorization: token },
           body: JSON.stringify({
             from: connection.source,
             to: connection.target,
@@ -185,6 +190,7 @@ const Plan = () => {
 
   const handleAddProfile = async (newNode: any) => {
     try {
+      const token = getCookie("token");
       // Si l'utilisateur est nouveau, créez l'utilisateur d'abord
       let userId = newNode.userId;
 
@@ -199,6 +205,7 @@ const Plan = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: token,
           },
           body: JSON.stringify({
             username,
@@ -226,6 +233,7 @@ const Plan = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: token,
         },
         body: JSON.stringify({
           user: userId,
@@ -264,13 +272,57 @@ const Plan = () => {
     }
   };
 
+  const handleEditProfile = async (updatedUser: any) => {
+    try {
+      const token = getCookie("token");
+      console.log(updatedUser);
+      // Mise à jour de l'utilisateur existant
+      const userResponse = await fetch(
+        `http://localhost:5000/api/users/${updatedUser._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token,
+          },
+          body: JSON.stringify({
+            name: updatedUser.name,
+            age: updatedUser.age,
+            description: updatedUser.description,
+            profilePicture: updatedUser.profileImage,
+            gallery: updatedUser.images || [],
+          }),
+        }
+      );
+
+      if (!userResponse.ok) {
+        throw new Error("Failed to update user");
+      }
+
+      const userData = await userResponse.json();
+
+      // Mise à jour de l'état des utilisateurs si nécessaire
+      setUsers((prevUsers) =>
+        prevUsers.map((user) => (user._id === userData._id ? userData : user))
+      );
+
+      console.log("User updated successfully:", userData);
+    } catch (error) {
+      console.error("Error updating profile:", error);
+    }
+  };
+
   const handleRemoveProfile = async (nodeId: string) => {
+    const token = getCookie("token");
     try {
       // Supprimer tous les edges associés au nœud
       const edgeResponse = await fetch(
         `http://localhost:5000/api/edges/byNode/${nodeId}`,
         {
           method: "DELETE",
+          headers: {
+            Authorization: token,
+          },
         }
       );
 
@@ -283,6 +335,9 @@ const Plan = () => {
         `http://localhost:5000/api/nodes/${nodeId}`,
         {
           method: "DELETE",
+          headers: {
+            Authorization: token,
+          },
         }
       );
 
@@ -330,7 +385,7 @@ const Plan = () => {
     setSelectedProfile(null);
   };
 
-  const handleShowEditProfileDetails = () => {
+  const handleShowEditProfileDetails = (elementId: string) => {
     setShowEditProfileDetails(true);
   };
 
@@ -347,8 +402,12 @@ const Plan = () => {
   };
 
   const fetchUsers = async () => {
+    const token = getCookie("token");
     const res = await fetch("http://localhost:5000/api/users", {
       next: { revalidate: 10 },
+      headers: {
+        Authorization: token,
+      },
     });
 
     if (!res.ok) {
@@ -364,8 +423,12 @@ const Plan = () => {
   const fetchNodesAndEdges = async () => {
     try {
       // Récupérer les Nodes
+      const token = getCookie("token");
       const resNodes = await fetch("http://localhost:5000/api/nodes", {
         next: { revalidate: 10 },
+        headers: {
+          Authorization: token,
+        },
       });
 
       if (!resNodes.ok) {
@@ -404,6 +467,9 @@ const Plan = () => {
       // Récupérer les Edges
       const resEdges = await fetch("http://localhost:5000/api/edges", {
         next: { revalidate: 10 },
+        headers: {
+          Authorization: token,
+        },
       });
 
       if (!resEdges.ok) {
@@ -445,21 +511,16 @@ const Plan = () => {
     }
   };
 
-  // useEffect(() => {
-  //   fetchUsers();
-  //   fetchNodesAndEdges();
-  //   if (!isLoading) {
-  //     setTimeout(() => {
-  //       setTimeUp(true);
-  //       onLayout("TB");
-  //     }, 1000);
-  //   }
-  // }, [isLoading]);
-
-  // useEffect(() => {
-  //   if (!user?.family) router.push("/family/join");
-  //   console.log("Updated user:", user);
-  // }, [user]);
+  useEffect(() => {
+    fetchUsers();
+    fetchNodesAndEdges();
+    if (!isLoading) {
+      setTimeout(() => {
+        setTimeUp(true);
+        onLayout("TB");
+      }, 1000);
+    }
+  }, [isLoading]);
 
   const renderContextMenu = (menuPosition: { x: number; y: number }) => {
     switch (selectedElementType) {
@@ -493,6 +554,7 @@ const Plan = () => {
         onContextMenu={(e) => handleContextMenu(e, "background")}
         onClick={handleClick}
       >
+        <Header members={users} onRemoveMember={() => {}} user={user} />
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -516,7 +578,6 @@ const Plan = () => {
                 "linear-gradient(to right, #f0f4f8, #d9e2ec, #f0f4f8)",
             }}
           />
-          <Controls />
         </ReactFlow>
         {menuVisible && renderContextMenu(menuPosition)}
         {showProfileDetails && (
@@ -527,8 +588,8 @@ const Plan = () => {
         )}
         {showEditProfileDetails && (
           <EditProfileDetails
-            profile={{}}
-            onSave={() => {}}
+            profileId={selectedProfile?.data.profileId}
+            onSave={handleEditProfile}
             handleClose={handleHideEditProfileDetails}
           />
         )}

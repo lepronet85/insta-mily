@@ -129,7 +129,7 @@ const Login = () => {
             <button
               type="button"
               className="text-blue-400 hover:text-blue-600 flex items-center justify-center"
-              onClick={() => router.push("/register")} // Remplacez par votre logique de navigation
+              onClick={() => router.push("/auth/register")}
             >
               <FaUserPlus className="mr-2" />
               Pas encore de compte ? Inscrivez-vous

@@ -3,7 +3,8 @@
   "module": "index.js",
   "type": "commonjs",
   "scripts": {
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "clean": "node cleanup.js"
   },
   "devDependencies": {
     "@types/bun": "latest"

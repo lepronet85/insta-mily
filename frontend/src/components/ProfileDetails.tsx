@@ -1,4 +1,5 @@
 import { Node } from "@xyflow/react";
+import { getCookie } from "cookies-next";
 import React, { useState, useEffect } from "react";
 import { FaTimes, FaEnvelope, FaArrowLeft, FaArrowRight } from "react-icons/fa";
 
@@ -9,7 +10,7 @@ const ProfileDetails = ({
   handleClose: () => void;
   profile: Node | null;
 }) => {
-  const [position, setPosition] = useState({ x: 40, y: 40 });
+  const [position, setPosition] = useState({ x: 20, y: 80 });
   const [isDragging, setIsDragging] = useState(false);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [user, setUser] = useState<any | null>(null);
@@ -55,6 +56,7 @@ const ProfileDetails = ({
 
   const fetchUserData = async () => {
     const { profileId } = profile?.data;
+    const token = getCookie("token");
     try {
       const userResponse = await fetch(
         `http://localhost:5000/api/users/${profileId}`,
@@ -62,6 +64,7 @@ const ProfileDetails = ({
           method: "GET",
           headers: {
             "Content-Type": "application/json",
+            Authorization: token,
           },
         }
       );

@@ -103,10 +103,30 @@ exports.getUserById = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
   try {
-    const { username, email, password, profilePicture } = req.body;
+    const {
+      username,
+      name,
+      email,
+      password,
+      profilePicture,
+      description,
+      age,
+      gallery,
+      family,
+    } = req.body;
     const updatedUser = await User.findByIdAndUpdate(
       req.params.id,
-      { username, email, password, profilePicture },
+      {
+        username,
+        name,
+        email,
+        password,
+        profilePicture,
+        description,
+        age,
+        gallery,
+        family,
+      },
       { new: true, runValidators: true }
     );
     if (!updatedUser) {

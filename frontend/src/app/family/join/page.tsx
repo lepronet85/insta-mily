@@ -1,10 +1,13 @@
 "use client";
 
+import useUser from "@/hooks/useUser";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { FaUsers, FaPlus } from "react-icons/fa";
 
 const Family = () => {
   const router = useRouter();
+
   return (
     <div
       className="min-h-screen flex items-center justify-center"

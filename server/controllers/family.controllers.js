@@ -1,17 +1,35 @@
 const Family = require("../models/family.model");
+const User = require("../models/user.model");
+
+const generateFamilyCode = () => {
+  return Math.random().toString(36).substring(2, 10).toUpperCase();
+};
 
 exports.createFamily = async (req, res) => {
+  console.log(req.body);
   try {
-    const { familyName, code, members } = req.body;
+    const { familyName } = req.body;
+    const userId = req.body.id; // Récupérer l'ID de l'utilisateur depuis le token JWT
 
-    const family = new Family({
+    // Générer un code de famille unique
+    const familyCode = generateFamilyCode();
+
+    // Créer la nouvelle famille et ajouter l'utilisateur en tant que membre fondateur
+    const newFamily = new Family({
       familyName,
-      code,
-      members,
+      code: familyCode,
+      members: [userId], // Ajouter l'utilisateur comme premier membre
     });
 
-    await family.save();
-    res.status(201).json({ message: "Famille créée avec succès", family });
+    // Sauvegarder la famille dans la base de données
+    await newFamily.save();
+
+    // Mettre à jour l'utilisateur pour associer la famille
+    await User.findByIdAndUpdate(userId, { family: newFamily._id });
+
+    res
+      .status(201)
+      .json({ message: "Famille créée avec succès", family: newFamily });
   } catch (error) {
     res
       .status(500)
@@ -104,11 +122,9 @@ exports.getFamilyMembers = async (req, res) => {
     // Retourner les membres de la famille
     res.status(200).json(family.members);
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        message: "Erreur lors de la récupération des membres de la famille",
-        error,
-      });
+    res.status(500).json({
+      message: "Erreur lors de la récupération des membres de la famille",
+      error,
+    });
   }
 };
