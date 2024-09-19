@@ -1,6 +1,6 @@
 # InstaMily
 
-![Cover Image](path_to_your_image) <!-- Ajoute ici le chemin vers la capture d'écran de la plateforme -->
+![Cover Image](screenshot.png) <!-- Ajoute ici le chemin vers la capture d'écran de la plateforme -->
 
 ## About InstaMily
 
