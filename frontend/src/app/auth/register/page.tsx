@@ -159,7 +159,7 @@ const Register = () => {
             <button
               type="button"
               className="text-blue-400 hover:text-blue-600 flex items-center justify-center"
-              onClick={() => router.push("/login")} // Remplacez par votre logique de navigation
+              onClick={() => router.push("/auth/login")} // Remplacez par votre logique de navigation
             >
               <FaSignInAlt className="mr-2" />
               Déjà un compte ? Connectez-vous
