@@ -8,6 +8,7 @@ import {
 import React from "react";
 import { MdOutlineClear } from "react-icons/md";
 import { Button } from "./ui/button";
+import { getCookie } from "cookies-next";
 
 export default function CustomEdge(props: EdgeProps) {
   const {
@@ -47,10 +48,14 @@ export default function CustomEdge(props: EdgeProps) {
             transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
           }}
           onClick={async () => {
+            const token = getCookie("token");
             const edgeResponse = await fetch(
               `http://localhost:5000/api/edges/${id}`,
               {
                 method: "DELETE",
+                headers: {
+                  Authorization: token,
+                },
               }
             );
 

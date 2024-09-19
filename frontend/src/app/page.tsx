@@ -26,6 +26,7 @@ import { getCookie } from "cookies-next";
 import useUser from "@/hooks/useUser";
 import { useRouter } from "next/navigation";
 import Header from "@/components/header";
+import MessageBox from "@/components/MessageBox";
 
 const initialNodes: Node[] = [
   // {
@@ -128,6 +129,62 @@ const Plan = () => {
   const [showAddNode, setShowAddNode] = useState(false);
   const router = useRouter();
   const { user, loading } = useUser();
+  const [conversations, setConversations] = useState([
+    {
+      id: 1,
+      name: "Famille",
+      type: "family",
+      lastMessage: "Salut tout le monde!",
+      lastMessageDate: new Date(),
+      messages: [
+        { id: 1, text: "Salut tout le monde!", date: new Date() },
+        { id: 2, text: "Comment ça va?", date: new Date() },
+      ],
+    },
+    {
+      id: 2,
+      name: "Jean",
+      type: "private",
+      lastMessage: "À bientôt!",
+      lastMessageDate: new Date(),
+      messages: [
+        { id: 1, text: "Salut Jean!", date: new Date() },
+        { id: 2, text: "À bientôt!", date: new Date() },
+      ],
+    },
+  ]);
+
+  const handleSendMessage = (conversationId, message) => {
+    setConversations((prevConversations) =>
+      prevConversations.map((conversation) =>
+        conversation.id === conversationId
+          ? {
+              ...conversation,
+              messages: [
+                ...conversation.messages,
+                { id: Date.now(), text: message, date: new Date() },
+              ],
+              lastMessage: message,
+            }
+          : conversation
+      )
+    );
+  };
+
+  const handleDeleteMessage = (conversationId, messageId) => {
+    setConversations((prevConversations) =>
+      prevConversations.map((conversation) =>
+        conversation.id === conversationId
+          ? {
+              ...conversation,
+              messages: conversation.messages.filter(
+                (message) => message.id !== messageId
+              ),
+            }
+          : conversation
+      )
+    );
+  };
 
   const handleContextMenu = (
     event: React.MouseEvent,
@@ -600,6 +657,11 @@ const Plan = () => {
             users={users || []}
           />
         )}
+        <MessageBox
+          conversations={conversations}
+          onSendMessage={handleSendMessage}
+          onDeleteMessage={handleDeleteMessage}
+        />
       </div>
     )
   );
