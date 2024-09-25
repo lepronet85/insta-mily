@@ -21,7 +21,7 @@ Families are the cornerstone of our lives, and InstaMily helps preserve your fam
 
 InstaMily is built with the latest technologies to ensure reliability, scalability, and user-friendliness:
 
-- **Front-End**: React.js, HTML, CSS, JavaScript
+- **Front-End**: Next Js, HTML, CSS, JavaScript
 - **Back-End**: Node.js, Express.js
 - **Database**: MongoDB
 - **Authentication**: JWT (JSON Web Tokens) with Passport.js
@@ -30,7 +30,7 @@ InstaMily is built with the latest technologies to ensure reliability, scalabili
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your_username/instamily.git
+   git clone https://github.com/lepronet85/instamily.git
    ```
 2. Install the necessary dependencies:
    ```bash
